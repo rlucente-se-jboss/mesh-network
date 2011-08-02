@@ -210,7 +210,10 @@ class Links {
 
 				if (edges[i][j] != null) {
 					edges[i][j].renderCloud(g);
-					pendingNodes.add(nodej);
+
+                                        if (nodej.getType() != NodeType.SOLDIER) {
+						pendingNodes.add(nodej);
+                                        }
 				}
 			}
 		}
