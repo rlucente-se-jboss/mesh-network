@@ -135,9 +135,21 @@ class Links {
 				ShapeFill linkFill = new GradientFill(posi, color, posj, color,
 						false);
 
-				color = new Color(255, 0, 0, 0.75f * alpha);
-				Shape cloudPoly = createLinkPoly(posi, posj, length, width
-						* (Float) Parameters.CLOUDLINK_SCALE.getValue());
+				float cloudWidth =
+					(Float) Parameters.CLOUDLINK_SCALE.getValue() * width;
+				float cloudAlpha = 0.75f * alpha;
+
+				// only red edges for backhaul connections
+				if (   nodei.getType() == NodeType.EDGENODE
+				    || nodej.getType() == NodeType.EDGENODE) {
+					cloudWidth = width;
+					cloudAlpha = alpha;
+					linkPoly = null;
+					linkFill = null;
+				}
+
+				color = new Color(255, 0, 0, cloudAlpha);
+				Shape cloudPoly = createLinkPoly(posi, posj, length, cloudWidth);
 				ShapeFill cloudFill = new GradientFill(posi, color, posj,
 						color, false);
 
@@ -236,7 +248,9 @@ class Links {
 		 * @param g
 		 */
 		void render(Graphics g) {
-			g.fill(linkPoly, linkFill);
+			if (linkPoly != null && linkFill != null) {
+				g.fill(linkPoly, linkFill);
+			}
 		}
 
 		/**
