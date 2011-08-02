@@ -1,0 +1,16 @@
+#
+# unit   antenna
+# type   enabled   x     y
+#
+SOLDIER   true   912.0  298.0
+SOLDIER   true   158.0  142.0
+SOLDIER   true   217.0   66.0
+SOLDIER   true   651.0   93.0
+SOLDIER   true   939.0  518.0
+SOLDIER   true   941.0  396.0
+HMMWV     true   731.0  449.0
+HMMWV     true   274.0  202.0
+HMMWV     true   310.0  449.0
+HMMWV     true   511.0  599.0
+HMMWV     true   521.0  334.0
+EDGENODE  true    77.0  538.0

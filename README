@@ -1,0 +1,42 @@
+OVERVIEW
+
+12345678901234567890123456789012345678901234567890123456789012345678901234567890
+This is a mesh network demo with with a military focus.  The idea for this demo
+came from the flash mesh demo at http://one.laptop.org/about/hardware, which
+demonstrates the XO laptop's features for a self-forming mesh network.
+
+This application leverages the Lightweight Java Game Library (LWJGL) and the
+Slick - 2D Game Library.  Extensive documentation, downloads, etc for both of
+these tools can be found at:
+
+http://www.lwjgl.org/
+http://slick.cokeandcode.com/
+
+POLICY
+
+The demo has a simple policy governing how connections are formed and
+displayed: 
+
+1.  Soldiers can communicate only with HMMWVs (implying the need for a broker)
+2.  HMMWVs can communicate with any other node
+3.  Cloud Edge nodes, representing connections to long haul infrastructure, can
+    communicate with HMMWVs (implying a broker-to-broker connection)
+4.  A connection between two nodes is represented as a blue line where the
+    thickness and opaqueness indicate signal strength
+5.  A connection path back to the Cloud Edge node will have an overlayed red
+    edge.  In other words, mesh networks that are isolated from the Cloud Edge
+    nodes will only have blue edges, whereas mesh networks with connectivity
+    to the Cloud Edge nodes will have blue edges overlayed with red
+
+BUILD AND RUN
+
+This demo relies on maven and java so please make sure that both are installed
+in your environment.  To build and run the demo:
+
+mvn clean install
+mvn exec:exec -Dlwjgl.os.name=linux
+
+Valid values for lwjgl.os.name are linux, macosx, solaris, and windows, with linux
+being the default.
+
+Enjoy!! 
