@@ -35,7 +35,14 @@ in your environment.  To build and run the demo:
 mvn clean install
 mvn exec:exec -Dlwjgl.os.name=linux
 
-Valid values for lwjgl.os.name are linux, macosx, solaris, and windows, with linux
-being the default.
+Valid values for lwjgl.os.name are linux, macosx, solaris, and windows, with
+linux being the default.
+
+USAGE
+
+The demo displays HMMWVs, soldiers, and cloud edge nodes connected via a mesh
+network.  With your mouse, left-click and drag nodes around to change their
+connections to other nodes.  You can toggle communications for a node by
+right-clicking.
 
 Enjoy!! 
