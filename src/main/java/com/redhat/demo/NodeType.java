@@ -8,13 +8,11 @@ package com.redhat.demo;
  * 
  */
 public enum NodeType {
-	SOLDIER {
+	SOLDIER(false, false) {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.redhat.demo.NodeType#connectsTo(com.redhat.demo
-		 * .NodeType)
+		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
 		boolean connectsTo(NodeType type) {
@@ -24,26 +22,22 @@ public enum NodeType {
 			return false;
 		}
 	},
-	HMMWV {
+	HMMWV(true, false) {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.redhat.demo.NodeType#connectsTo(com.redhat.demo
-		 * .NodeType)
+		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
 		boolean connectsTo(NodeType type) {
 			return true;
 		}
 	},
-	EDGENODE {
+	EDGENODE(true, true) {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.redhat.demo.NodeType#connectsTo(com.redhat.demo
-		 * .NodeType)
+		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
 		boolean connectsTo(NodeType type) {
@@ -54,9 +48,35 @@ public enum NodeType {
 		}
 	};
 
+	private boolean isBroker;
+	private boolean isCloudEdge;
+
+	/**
+	 * @param isBroker
+	 * @param isCloudEdge
+	 */
+	NodeType(boolean isBroker, boolean isCloudEdge) {
+		this.isBroker = isBroker;
+		this.isCloudEdge = isCloudEdge;
+	}
+
 	/**
 	 * @param type
 	 * @return
 	 */
 	abstract boolean connectsTo(NodeType type);
+
+	/**
+	 * @return
+	 */
+	boolean isBroker() {
+		return isBroker;
+	}
+
+	/**
+	 * @return
+	 */
+	boolean isCloudEdge() {
+		return isCloudEdge;
+	}
 }

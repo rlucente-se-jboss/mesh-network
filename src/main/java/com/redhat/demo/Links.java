@@ -72,13 +72,6 @@ class Links {
 			}
 		}
 
-		Set<Node> visited = new HashSet<Node>();
-		for (Node nodei : nodeList) {
-			if (nodei.getType() == NodeType.EDGENODE) {
-				renderCloud(nodei, visited, g);
-			}
-		}
-
 		for (Node node : nodeList) {
 			node.render(g);
 		}
@@ -96,20 +89,22 @@ class Links {
 			edges[i][j] = createEdge(nodei, nodej);
 			edges[j][i] = edges[i][j];
 		}
+
+		labelSpanningTree();
 	}
 
 	/**
-	 * @param nodei
-	 * @param nodej
+	 * @param dist
 	 * @return
 	 */
-	private float calcAlpha(float dist) {
+	private float calculateLinkOpacity(float dist) {
 		int maxLinkRange = (Integer) Parameters.MAX_LINK_RANGE.getValue();
-		float minScale = (Float) Parameters.MIN_SCALE.getValue();
+		float minOpacity = (Float) Parameters.MIN_OPACITY.getValue();
+
 		if (dist <= maxLinkRange) {
 			float percentDropoff = dist / maxLinkRange;
-			float alpha = 1.0f - percentDropoff * percentDropoff;
-			return (alpha > minScale) ? alpha : minScale;
+			float opacity = 1.0f - percentDropoff * percentDropoff;
+			return (opacity > minOpacity) ? opacity : minOpacity;
 		}
 
 		return 0.0f;
@@ -127,35 +122,21 @@ class Links {
 			Vector2f posj = nodej.getCenter();
 
 			float length = posi.distance(posj);
-			float alpha = calcAlpha(length);
+			float opacity = calculateLinkOpacity(length);
 
-			if (alpha != 0.0f) {
-				float width = alpha * (Integer) Parameters.MAX_LINK_WIDTH.getValue();
+			if (opacity != 0.0f) {
+				float width = opacity * (Integer) Parameters.MAX_LINK_WIDTH.getValue();
 
-				Color color = new Color(0, 0, 255, alpha);
-				Shape linkPoly = createLinkPoly(posi, posj, length, width);
-				ShapeFill linkFill = new GradientFill(posi, color, posj, color,
+				Color color = new Color(0, 0, 255, opacity);
+				Shape edgePoly = createEdgePoly(posi, posj, length, width);
+				ShapeFill edgeFill = new GradientFill(posi, color, posj, color,
 						false);
 
-				float cloudWidth =
-					(Float) Parameters.CLOUDLINK_SCALE.getValue() * width;
-				float cloudAlpha = 0.75f * alpha;
-
-				// only red edges for backhaul connections
-				if (   nodei.getType() == NodeType.EDGENODE
-				    || nodej.getType() == NodeType.EDGENODE) {
-					cloudWidth = width;
-					cloudAlpha = alpha;
-					linkPoly = null;
-					linkFill = null;
-				}
-
-				color = new Color(255, 0, 0, cloudAlpha);
-				Shape cloudPoly = createLinkPoly(posi, posj, length, cloudWidth);
-				ShapeFill cloudFill = new GradientFill(posi, color, posj,
+				color = new Color(255, 0, 0, opacity);
+				ShapeFill spanningTreeFill = new GradientFill(posi, color, posj,
 						color, false);
 
-				result = new Edge(linkPoly, cloudPoly, linkFill, cloudFill);
+				result = new Edge(edgePoly, edgeFill, spanningTreeFill);
 			}
 		}
 
@@ -165,10 +146,11 @@ class Links {
 	/**
 	 * @param posi
 	 * @param posj
-	 * @param alpha
+	 * @param length
+	 * @param width
 	 * @return
 	 */
-	private Shape createLinkPoly(Vector2f posi, Vector2f posj, float length,
+	private Shape createEdgePoly(Vector2f posi, Vector2f posj, float length,
 			float width) {
 		float factor = 0.5f * width / length;
 
@@ -196,32 +178,52 @@ class Links {
 	}
 
 	/**
-	 * @param nodei
-	 * @param visited
-	 * @param g
-	 */
-	private void renderCloud(Node nodei, Set<Node> visited, Graphics g) {
-		visited.add(nodei);
+         */
+	private void labelSpanningTree() {
+		for (Node nodei : nodeList) {
+			int i = nodei.getId();
 
-		Set<Node> pendingNodes = new HashSet<Node>();
-		for (Node nodej : nodeList) {
-
-			if (!visited.contains(nodej)) {
-				int i = nodei.getId();
+			for (Node nodej : nodeList) {
 				int j = nodej.getId();
 
 				if (edges[i][j] != null) {
-					edges[i][j].renderCloud(g);
-
-                                        if (nodej.getType() != NodeType.SOLDIER) {
-						pendingNodes.add(nodej);
-                                        }
+					edges[i][j].setInSpanningTree(false);
 				}
 			}
 		}
 
-		for (Node node : pendingNodes) {
-			renderCloud(node, visited, g);
+		Set<Node> explored = new HashSet<Node>();
+
+		for (Node nodei : nodeList) {
+			if (nodei.isCloudEdge()) {
+				labelSpanningTree(nodei, explored);
+			}
+		}
+	}
+
+	/**
+	 * @param nodei
+	 * @param explored
+	 */
+	private void labelSpanningTree(Node nodei, Set<Node> explored) {
+		explored.add(nodei);
+
+		for (Node nodej : nodeList) {
+
+			if (!explored.contains(nodej)) {
+				int i = nodei.getId();
+				int j = nodej.getId();
+
+				if (edges[i][j] != null) {
+					edges[i][j].setInSpanningTree(true);
+
+                                        if (nodej.isBroker()) {
+						labelSpanningTree(nodej, explored);
+                                        } else {
+						explored.add(nodej);
+					}
+				}
+			}
 		}
 	}
 
@@ -230,39 +232,38 @@ class Links {
 	 * 
 	 */
 	class Edge {
-		private Shape linkPoly;
-		private Shape cloudPoly;
-		private ShapeFill linkFill;
-		private ShapeFill cloudFill;
+		private Shape edgePoly;
+		private ShapeFill edgeFill;
+		private ShapeFill spanningTreeFill;
+		private boolean inSpanningTree;
 
 		/**
-		 * @param linkPoly
-		 * @param cloudPoly
-		 * @param linkFill
-		 * @param cloudFill
+		 * @param edgePoly
+		 * @param edgeFill
+		 * @param spanningTreeFill
 		 */
-		Edge(Shape linkPoly, Shape cloudPoly, ShapeFill linkFill,
-				ShapeFill cloudFill) {
-			this.linkPoly = linkPoly;
-			this.cloudPoly = cloudPoly;
-			this.linkFill = linkFill;
-			this.cloudFill = cloudFill;
+		Edge(Shape edgePoly, ShapeFill edgeFill, ShapeFill spanningTreeFill) {
+			this.edgePoly = edgePoly;
+			this.edgeFill = edgeFill;
+			this.spanningTreeFill = spanningTreeFill;
+		}
+
+		/**
+		 * @param inSpanningTree
+		 */
+		void setInSpanningTree(boolean inSpanningTree) {
+			this.inSpanningTree = inSpanningTree;
 		}
 
 		/**
 		 * @param g
 		 */
 		void render(Graphics g) {
-			if (linkPoly != null && linkFill != null) {
-				g.fill(linkPoly, linkFill);
+			if (inSpanningTree) {
+				g.fill(edgePoly, spanningTreeFill);
+			} else {
+				g.fill(edgePoly, edgeFill);
 			}
-		}
-
-		/**
-		 * @param g
-		 */
-		void renderCloud(Graphics g) {
-			g.fill(cloudPoly, cloudFill);
 		}
 	}
 }
