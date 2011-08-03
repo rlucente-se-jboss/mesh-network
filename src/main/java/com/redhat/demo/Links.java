@@ -105,9 +105,11 @@ class Links {
 	 */
 	private float calcAlpha(float dist) {
 		int maxLinkRange = (Integer) Parameters.MAX_LINK_RANGE.getValue();
+		float minScale = (Float) Parameters.MIN_SCALE.getValue();
 		if (dist <= maxLinkRange) {
 			float percentDropoff = dist / maxLinkRange;
-			return 1.0f - percentDropoff * percentDropoff;
+			float alpha = 1.0f - percentDropoff * percentDropoff;
+			return (alpha > minScale) ? alpha : minScale;
 		}
 
 		return 0.0f;

@@ -18,7 +18,7 @@ import org.newdawn.slick.SlickException;
 enum Parameters {
 	TITLE, BACKGROUND_IMAGE, SOLDIER_IMAGE, HMMWV_IMAGE, EDGENODE_IMAGE,
 	SOLDIER_SCALE, HMMWV_SCALE, EDGENODE_SCALE, WINDOW_WIDTH, WINDOW_HEIGHT,
-	MAX_LINK_RANGE, MAX_LINK_WIDTH, CLOUDLINK_SCALE, NODE_FILENAME;
+	MAX_LINK_RANGE, MAX_LINK_WIDTH, MIN_SCALE, CLOUDLINK_SCALE, NODE_FILENAME;
 
 	private static final String PATH = "demo.properties";
 	private static final Logger LOG = Logger.getLogger(Parameters.class);
@@ -74,6 +74,7 @@ enum Parameters {
 		case HMMWV_SCALE:
 		case EDGENODE_SCALE:
 		case CLOUDLINK_SCALE:
+		case MIN_SCALE:
 			try {
 				value = Float.valueOf(val);
 			} catch (NumberFormatException nfe) {
