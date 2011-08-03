@@ -22,10 +22,10 @@ displayed:
     communicate with HMMWVs (implying a broker-to-broker connection)
 4.  A connection between two nodes is represented as a blue line where the
     thickness and opaqueness indicate signal strength
-5.  A connection path back to the Cloud Edge node will have an overlayed red
+5.  A connection path back to the Cloud Edge node will have an overlaid red
     edge.  In other words, mesh networks that are isolated from the Cloud Edge
     nodes will only have blue edges, whereas mesh networks with connectivity
-    to the Cloud Edge nodes will have blue edges overlayed with red
+    to the Cloud Edge nodes will have blue edges overlaid with red
 
 BUILD AND RUN
 
