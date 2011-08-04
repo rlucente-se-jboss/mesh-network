@@ -18,14 +18,13 @@ displayed:
 
 1.  Soldiers can communicate only with HMMWVs (implying the need for a broker)
 2.  HMMWVs can communicate with any other node
-3.  Cloud Edge nodes, representing connections to long haul infrastructure, can
+3.  Cloud edge nodes, representing connections to long haul infrastructure, can
     communicate with HMMWVs (implying a broker-to-broker connection)
-4.  A connection between two nodes is represented as a blue line where the
-    thickness and opaqueness indicate signal strength
-5.  A connection path back to the Cloud Edge node will have an overlayed red
-    edge.  In other words, mesh networks that are isolated from the Cloud Edge
-    nodes will only have blue edges, whereas mesh networks with connectivity
-    to the Cloud Edge nodes will have blue edges overlayed with red
+4.  A connection between two nodes is represented as a line where the thickness
+    and opaqueness indicate signal strength
+5.  A connection thats part of the spanning tree to the cloud edge is red,
+    whereas redundant connections are blue.  Nodes that are isolated from the
+    cloud edge will only have blue connections.
 
 BUILD AND RUN
 
@@ -43,6 +42,7 @@ USAGE
 The demo displays HMMWVs, soldiers, and cloud edge nodes connected via a mesh
 network.  With your mouse, left-click and drag nodes around to change their
 connections to other nodes.  You can toggle communications for a node by
-right-clicking.
+right-clicking.  All of these changes will result in changes to the spanning
+tree showing the connections to the cloud edge.
 
 Enjoy!! 

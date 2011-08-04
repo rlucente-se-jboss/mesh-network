@@ -81,6 +81,20 @@ class Node {
 	}
 
 	/**
+	 * @return
+	 */
+	boolean isBroker() {
+		return type.isBroker();
+	}
+
+	/**
+	 * @return
+	 */
+	boolean isCloudEdge() {
+		return type.isCloudEdge();
+	}
+
+	/**
 	 * @param x
 	 * @param y
 	 * @return
