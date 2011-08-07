@@ -1,7 +1,7 @@
 OVERVIEW
 
-This is a mesh network demo with with a military focus.  The idea for this demo
-came from the flash mesh demo at http://one.laptop.org/about/hardware, which
+This is a mesh network demo with a military focus.  The idea for this demo came
+from the flash mesh demo at http://one.laptop.org/about/hardware, which
 demonstrates the XO laptop's features for a self-forming mesh network.
 
 This application leverages the Lightweight Java Game Library (LWJGL) and the
