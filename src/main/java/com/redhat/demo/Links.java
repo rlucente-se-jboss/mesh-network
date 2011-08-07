@@ -3,10 +3,17 @@
  */
 package com.redhat.demo;
 
+import java.util.AbstractMap;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -22,6 +29,7 @@ import org.newdawn.slick.geom.Vector2f;
  */
 class Links {
 	private List<Node> nodeList = new LinkedList<Node>();
+	private Map<Integer, Node> nodeById = new HashMap<Integer, Node>();
 	private Edge[][] edges;
 
 	/**
@@ -29,6 +37,7 @@ class Links {
 	 */
 	void addNode(Node node) {
 		nodeList.add(node);
+		nodeById.put(node.getId(), node);
 	}
 
 	/**
@@ -125,7 +134,8 @@ class Links {
 			float opacity = calculateLinkOpacity(length);
 
 			if (opacity != 0.0f) {
-				float width = opacity * (Integer) Parameters.MAX_LINK_WIDTH.getValue();
+				float width = opacity
+						* (Integer) Parameters.MAX_LINK_WIDTH.getValue();
 
 				Color color = new Color(0, 0, 255, opacity);
 				Shape edgePoly = createEdgePoly(posi, posj, length, width);
@@ -133,8 +143,8 @@ class Links {
 						false);
 
 				color = new Color(255, 0, 0, opacity);
-				ShapeFill spanningTreeFill = new GradientFill(posi, color, posj,
-						color, false);
+				ShapeFill spanningTreeFill = new GradientFill(posi, color,
+						posj, color, false);
 
 				result = new Edge(edgePoly, edgeFill, spanningTreeFill);
 			}
@@ -207,24 +217,49 @@ class Links {
 	 */
 	private void labelSpanningTree(Node nodei, Set<Node> explored) {
 		explored.add(nodei);
+		int i = nodei.getId();
 
-		for (Node nodej : nodeList) {
+		List<Integer> columnIds = sortRowByOpacity(i);
+		for (int j : columnIds) {
+			Node nodej = nodeById.get(j);
 
 			if (!explored.contains(nodej)) {
-				int i = nodei.getId();
-				int j = nodej.getId();
+				edges[i][j].setInSpanningTree(true);
 
-				if (edges[i][j] != null) {
-					edges[i][j].setInSpanningTree(true);
-
-                                        if (nodej.isBroker()) {
-						labelSpanningTree(nodej, explored);
-                                        } else {
-						explored.add(nodej);
-					}
+				if (nodej.isBroker()) {
+					labelSpanningTree(nodej, explored);
+				} else {
+					explored.add(nodej);
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param rowId
+	 */
+	private List<Integer> sortRowByOpacity(final int rowId) {
+		List<Integer> sortedOpacity = new LinkedList<Integer>();
+
+		for (int j = 0; j < nodeList.size(); j++) {
+			Edge edge = edges[rowId][j];
+
+			if (edge != null) {
+				boolean inserted = false;
+				for (int k = 0; !inserted && k < sortedOpacity.size(); k++) {
+					if (edge.getOpacity() > edges[rowId][sortedOpacity.get(k)].getOpacity()) {
+						sortedOpacity.add(k, j);
+						inserted = true;
+					}
+				}
+				
+				if (!inserted) {
+					sortedOpacity.add(j);
+				}
+			}
+		}
+
+		return sortedOpacity;
 	}
 
 	/**
@@ -246,6 +281,15 @@ class Links {
 			this.edgePoly = edgePoly;
 			this.edgeFill = edgeFill;
 			this.spanningTreeFill = spanningTreeFill;
+		}
+
+		/**
+		 * @return
+		 */
+		float getOpacity() {
+			float x = edgePoly.getCenterX();
+			float y = edgePoly.getCenterY();
+			return edgeFill.colorAt(edgePoly, x, y).getAlpha() / 255.0f;
 		}
 
 		/**
