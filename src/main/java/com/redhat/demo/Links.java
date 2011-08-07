@@ -3,17 +3,12 @@
  */
 package com.redhat.demo;
 
-import java.util.AbstractMap;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -247,12 +242,13 @@ class Links {
 			if (edge != null) {
 				boolean inserted = false;
 				for (int k = 0; !inserted && k < sortedOpacity.size(); k++) {
-					if (edge.getOpacity() > edges[rowId][sortedOpacity.get(k)].getOpacity()) {
+					if (edge.getOpacity() > edges[rowId][sortedOpacity.get(k)]
+							.getOpacity()) {
 						sortedOpacity.add(k, j);
 						inserted = true;
 					}
 				}
-				
+
 				if (!inserted) {
 					sortedOpacity.add(j);
 				}
