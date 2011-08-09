@@ -3,7 +3,8 @@
  */
 package com.redhat.demo;
 
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
@@ -16,11 +17,10 @@ import org.newdawn.slick.SlickException;
  * 
  */
 enum Parameters {
-	TITLE, BACKGROUND_IMAGE, SOLDIER_IMAGE, HMMWV_IMAGE, EDGENODE_IMAGE,
-	SOLDIER_SCALE, HMMWV_SCALE, EDGENODE_SCALE, WINDOW_WIDTH, WINDOW_HEIGHT,
-	MAX_LINK_RANGE, MAX_LINK_WIDTH, MIN_OPACITY, CLOUDLINK_SCALE, NODE_FILENAME;
+	TITLE, BACKGROUND_IMAGE, SOLDIER_IMAGE, HMMWV_IMAGE, EDGENODE_IMAGE, SOLDIER_SCALE, HMMWV_SCALE, EDGENODE_SCALE, WINDOW_WIDTH, WINDOW_HEIGHT, MAX_LINK_RANGE, MAX_LINK_WIDTH, MIN_OPACITY, CLOUDLINK_SCALE, NODE_FILENAME;
 
-	private static final String PATH = "demo.properties";
+	private static final String PROPS_FNAME = "demo.properties";
+	private static final String IMAGES_PATH = "/images/";
 	private static final Logger LOG = Logger.getLogger(Parameters.class);
 	private static Properties properties;
 
@@ -33,10 +33,12 @@ enum Parameters {
 		if (properties == null) {
 			properties = new Properties();
 			try {
-				Reader reader = new FileReader(PATH);
+				Reader reader = new InputStreamReader(
+						Parameters.class.getResourceAsStream("/" + PROPS_FNAME));
 				properties.load(reader);
 			} catch (Exception e) {
-				LOG.fatal("Unable to load " + PATH + " file from classpath.", e);
+				LOG.fatal("Unable to load " + PROPS_FNAME
+						+ " file from classpath.", e);
 				System.exit(1);
 			}
 		}
@@ -51,24 +53,19 @@ enum Parameters {
 		case BACKGROUND_IMAGE:
 			int width = (Integer) WINDOW_WIDTH.getValue();
 			int height = (Integer) WINDOW_HEIGHT.getValue();
-			try {
-				value = new Image(val).getScaledCopy(width, height);
-			} catch (SlickException se) {
-				LOG.fatal("Unable to load image for '" + this + "'");
-				System.exit(1);
-			}
+			value = initImage(val).getScaledCopy(width, height);
 			break;
 		case SOLDIER_IMAGE:
 			float scale = (Float) SOLDIER_SCALE.getValue();
-			value = initImage(val, scale);
+			value = initImage(val).getScaledCopy(scale);
 			break;
 		case HMMWV_IMAGE:
 			scale = (Float) HMMWV_SCALE.getValue();
-			value = initImage(val, scale);
+			value = initImage(val).getScaledCopy(scale);
 			break;
 		case EDGENODE_IMAGE:
 			scale = (Float) EDGENODE_SCALE.getValue();
-			value = initImage(val, scale);
+			value = initImage(val).getScaledCopy(scale);
 			break;
 		case SOLDIER_SCALE:
 		case HMMWV_SCALE:
@@ -96,16 +93,17 @@ enum Parameters {
 	}
 
 	/**
-	 * @param imageFilename
-	 * @param scale
+	 * @param imageName
 	 * @return
 	 */
-	private Image initImage(String imageFilename, float scale) {
+	private Image initImage(String imageName) {
 		Image result = null;
 		try {
-			result = new Image(imageFilename).getScaledCopy(scale);
+			InputStream is = Parameters.class.getResourceAsStream(IMAGES_PATH
+					+ imageName);
+			result = new Image(is, imageName, false);
 		} catch (SlickException se) {
-			LOG.fatal("Unable to read image file '" + imageFilename + "'");
+			LOG.fatal("Unable to read image file '" + imageName + "'");
 			System.exit(1);
 		}
 		return result;

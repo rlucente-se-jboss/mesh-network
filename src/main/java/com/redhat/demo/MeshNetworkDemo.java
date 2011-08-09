@@ -1,7 +1,7 @@
 package com.redhat.demo;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 import org.newdawn.slick.AppGameContainer;
@@ -39,8 +39,11 @@ class MeshNetworkDemo extends BasicGame {
 		int id = 0;
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					(String) Parameters.NODE_FILENAME.getValue()));
+			String nodeFilename = "/"
+					+ (String) Parameters.NODE_FILENAME.getValue();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					MeshNetworkDemo.class.getResourceAsStream(nodeFilename)));
+
 			while (reader.ready()) {
 				String line = reader.readLine().trim();
 
@@ -68,7 +71,7 @@ class MeshNetworkDemo extends BasicGame {
 							position));
 				}
 			}
-			
+
 			reader.close();
 			links.finishNodes();
 		} catch (Throwable t) {
