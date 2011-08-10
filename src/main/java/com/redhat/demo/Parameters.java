@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
@@ -21,7 +20,6 @@ enum Parameters {
 
 	private static final String PROPS_FNAME = "demo.properties";
 	private static final String IMAGES_PATH = "/images/";
-	private static final Logger LOG = Logger.getLogger(Parameters.class);
 	private static Properties properties;
 
 	private Object value;
@@ -37,9 +35,8 @@ enum Parameters {
 						Parameters.class.getResourceAsStream("/" + PROPS_FNAME));
 				properties.load(reader);
 			} catch (Exception e) {
-				LOG.fatal("Unable to load " + PROPS_FNAME
-						+ " file from classpath.", e);
-				System.exit(1);
+				throw new RuntimeException("Unable to load " + PROPS_FNAME +
+					" file from classpath.", e);
 			}
 		}
 
@@ -51,9 +48,7 @@ enum Parameters {
 			value = val;
 			break;
 		case BACKGROUND_IMAGE:
-			int width = (Integer) WINDOW_WIDTH.getValue();
-			int height = (Integer) WINDOW_HEIGHT.getValue();
-			value = initImage(val).getScaledCopy(width, height);
+			value = initImage(val);
 			break;
 		case SOLDIER_IMAGE:
 			float scale = (Float) SOLDIER_SCALE.getValue();
@@ -75,8 +70,8 @@ enum Parameters {
 			try {
 				value = Float.valueOf(val);
 			} catch (NumberFormatException nfe) {
-				LOG.fatal("Parameter '" + this + "' is not a float value.");
-				System.exit(1);
+				throw new RuntimeException("Parameter '" + this +
+					"' is not a float value.");
 			}
 			break;
 		case WINDOW_WIDTH:
@@ -86,8 +81,8 @@ enum Parameters {
 			try {
 				value = Integer.valueOf(val);
 			} catch (NumberFormatException nfe) {
-				LOG.fatal("Parameter '" + this + "' is not an integer value.");
-				System.exit(1);
+				throw new RuntimeException("Parameter '" + this +
+					"' is not an integer value.", nfe);
 			}
 		}
 	}
@@ -103,8 +98,7 @@ enum Parameters {
 					+ imageName);
 			result = new Image(is, imageName, false);
 		} catch (SlickException se) {
-			LOG.fatal("Unable to read image file '" + imageName + "'");
-			System.exit(1);
+			throw new RuntimeException("Unable to read image file '" + imageName + "'", se);
 		}
 		return result;
 	}

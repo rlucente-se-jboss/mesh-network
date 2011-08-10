@@ -3,7 +3,6 @@ package com.redhat.demo;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -16,8 +15,8 @@ import org.newdawn.slick.geom.Vector2f;
  * @author rlucente
  */
 class MeshNetworkDemo extends BasicGame {
-	private static final Logger LOG = Logger.getLogger(MeshNetworkDemo.class);
 
+	private Image background;
 	private Links links;
 	private Node selectedNode = null;
 
@@ -39,6 +38,12 @@ class MeshNetworkDemo extends BasicGame {
 		int id = 0;
 
 		try {
+			// get width and height from game container (so applet works)
+			int width= gc.getWidth();
+			int height= gc.getHeight();
+			background = ((Image) Parameters.BACKGROUND_IMAGE.getValue())
+				.getScaledCopy(width, height);
+
 			String nodeFilename = "/"
 					+ (String) Parameters.NODE_FILENAME.getValue();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -100,7 +105,7 @@ class MeshNetworkDemo extends BasicGame {
 	 * org.newdawn.slick.Graphics)
 	 */
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		((Image) Parameters.BACKGROUND_IMAGE.getValue()).draw(0, 0);
+		background.draw(0, 0);
 		links.render(g);
 	}
 
@@ -165,7 +170,7 @@ class MeshNetworkDemo extends BasicGame {
 					(Integer) Parameters.WINDOW_HEIGHT.getValue(), false);
 			app.start();
 		} catch (Exception e) {
-			LOG.error("Abnormal demo exit", e);
+			throw new RuntimeException("Abnormal demo exit", e);
 		}
 	}
 }

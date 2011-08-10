@@ -27,11 +27,6 @@
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-		<dependency>
 			<groupId>slick</groupId>
 			<artifactId>slick</artifactId>
 			<version>274</version>
