@@ -3,23 +3,27 @@
  */
 package com.redhat.demo;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
+import org.newdawn.slick.AppletGameContainer;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 /**
  * @author rlucente
  * 
  */
 enum Parameters {
-	TITLE, BACKGROUND_IMAGE, SOLDIER_IMAGE, HMMWV_IMAGE, EDGENODE_IMAGE, SOLDIER_SCALE, HMMWV_SCALE, EDGENODE_SCALE, WINDOW_WIDTH, WINDOW_HEIGHT, MAX_LINK_RANGE, MAX_LINK_WIDTH, MIN_OPACITY, CLOUDLINK_SCALE, NODE_FILENAME;
+	BACKGROUND_IMAGE, SOLDIER_IMAGE, HMMWV_IMAGE, EDGENODE_IMAGE,
+	SOLDIER_SCALE, HMMWV_SCALE, EDGENODE_SCALE, WINDOW_WIDTH, WINDOW_HEIGHT,
+	MAX_LINK_RANGE, MAX_LINK_WIDTH, MIN_OPACITY, CLOUDLINK_SCALE,
+	NODE_FILENAME;
 
 	private static final String PROPS_FNAME = "demo.properties";
-	private static final String IMAGES_PATH = "/images/";
+	private static final String IMAGES_PATH = "images/";
 	private static Properties properties;
 
 	private Object value;
@@ -30,20 +34,19 @@ enum Parameters {
 	private void init() {
 		if (properties == null) {
 			properties = new Properties();
+
 			try {
-				Reader reader = new InputStreamReader(
-						Parameters.class.getResourceAsStream("/" + PROPS_FNAME));
-				properties.load(reader);
+				URL url = getResourceUrl(PROPS_FNAME);
+				properties.load(url.openStream());
 			} catch (Exception e) {
-				throw new RuntimeException("Unable to load " + PROPS_FNAME +
-					" file from classpath.", e);
+				throw new RuntimeException("Unable to load " + PROPS_FNAME
+						+ " file from classpath.", e);
 			}
 		}
 
 		String val = (String) properties.get(this.toString());
 
 		switch (this) {
-		case TITLE:
 		case NODE_FILENAME:
 			value = val;
 			break;
@@ -70,8 +73,8 @@ enum Parameters {
 			try {
 				value = Float.valueOf(val);
 			} catch (NumberFormatException nfe) {
-				throw new RuntimeException("Parameter '" + this +
-					"' is not a float value.");
+				throw new RuntimeException("Parameter '" + this
+						+ "' is not a float value.");
 			}
 			break;
 		case WINDOW_WIDTH:
@@ -81,8 +84,8 @@ enum Parameters {
 			try {
 				value = Integer.valueOf(val);
 			} catch (NumberFormatException nfe) {
-				throw new RuntimeException("Parameter '" + this +
-					"' is not an integer value.", nfe);
+				throw new RuntimeException("Parameter '" + this
+						+ "' is not an integer value.", nfe);
 			}
 		}
 	}
@@ -90,17 +93,38 @@ enum Parameters {
 	/**
 	 * @param imageName
 	 * @return
+	 * @throws IOException
 	 */
 	private Image initImage(String imageName) {
 		Image result = null;
 		try {
-			InputStream is = Parameters.class.getResourceAsStream(IMAGES_PATH
-					+ imageName);
-			result = new Image(is, imageName, false);
-		} catch (SlickException se) {
-			throw new RuntimeException("Unable to read image file '" + imageName + "'", se);
+			URL url = getResourceUrl(IMAGES_PATH + imageName);
+			result = new Image(url.openStream(), imageName, false);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to read image file '"
+					+ imageName + "'", e);
 		}
 		return result;
+	}
+
+	/**
+	 * @param resourceName
+	 * @return
+	 * @throws MalformedURLException
+	 */
+	private URL getResourceUrl(String resourceName)
+			throws MalformedURLException {
+		URL url = getClass().getClassLoader().getResource(resourceName);
+
+		GameContainer container = MeshNetworkDemo.getContainer();
+		if (container instanceof AppletGameContainer.Container) {
+			AppletGameContainer.Container appletGameContainer =
+				(AppletGameContainer.Container) container;
+			url = new URL(appletGameContainer.getApplet().getCodeBase(),
+					resourceName);
+		}
+
+		return url;
 	}
 
 	/**

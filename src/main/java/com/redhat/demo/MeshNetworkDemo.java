@@ -14,17 +14,36 @@ import org.newdawn.slick.geom.Vector2f;
 /**
  * @author rlucente
  */
-class MeshNetworkDemo extends BasicGame {
+public class MeshNetworkDemo extends BasicGame {
 
+	// ignored for applets
+	private static final String TITLE = "Red Hat Mesh Network Demo";
+
+	private static GameContainer GAME_CONTAINER = null;
+	
 	private Image background;
 	private Links links;
 	private Node selectedNode = null;
+	
+	/**
+	 * @return
+	 */
+	public static GameContainer getContainer() {
+		return GAME_CONTAINER;
+	}
 
+	/**
+	 * @param gc
+	 */
+	private static void setGameContainer(GameContainer gc) {
+		GAME_CONTAINER = gc;
+	}
+	
 	/**
 	 * @param params
 	 */
 	public MeshNetworkDemo() {
-		super((String) Parameters.TITLE.getValue());
+		super(TITLE);
 		links = new Links();
 	}
 
@@ -35,6 +54,8 @@ class MeshNetworkDemo extends BasicGame {
 	 */
 	@Override
 	public void init(GameContainer gc) throws SlickException {
+		MeshNetworkDemo.setGameContainer(gc);
+		
 		int id = 0;
 
 		try {
@@ -165,7 +186,8 @@ class MeshNetworkDemo extends BasicGame {
 	public static void main(String[] args) {
 		try {
 			AppGameContainer app = new AppGameContainer(new MeshNetworkDemo());
-
+			MeshNetworkDemo.setGameContainer(app);
+			
 			app.setDisplayMode((Integer) Parameters.WINDOW_WIDTH.getValue(),
 					(Integer) Parameters.WINDOW_HEIGHT.getValue(), false);
 			app.start();
