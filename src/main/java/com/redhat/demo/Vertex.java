@@ -14,14 +14,14 @@ import org.newdawn.slick.geom.Vector2f;
  * @author rlucente
  * 
  */
-class Node {
+class Vertex {
 
 	private int id;
 	private Image image;
 	private Vector2f position;
 	private Vector2f center;
 	private Shape boundingBox;
-	private NodeType type;
+	private VertexType type;
 	private boolean antennaEnabled;
 
 	/**
@@ -31,7 +31,7 @@ class Node {
 	 * @param antennaEnabled
 	 * @param position
 	 */
-	Node(int id, NodeType type, Image image, boolean antennaEnabled,
+	Vertex(int id, VertexType type, Image image, boolean antennaEnabled,
 			Vector2f position) {
 		this.id = id;
 		this.type = type;
@@ -44,12 +44,12 @@ class Node {
 	}
 
 	/**
-	 * @param node
+	 * @param vertex
 	 * @return
 	 */
-	boolean connectsTo(Node node) {
-		return antennaEnabled && node.antennaEnabled && (this != node)
-				&& type.connectsTo(node.getType());
+	boolean connectsTo(Vertex vertex) {
+		return antennaEnabled && vertex.antennaEnabled && (this != vertex)
+				&& type.connectsTo(vertex.getType());
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Node {
 	/**
 	 * @return
 	 */
-	NodeType getType() {
+	VertexType getType() {
 		return type;
 	}
 

@@ -7,7 +7,7 @@ package com.redhat.demo;
  * @author rlucente
  * 
  */
-public enum NodeType {
+public enum VertexType {
 	SOLDIER(false, false) {
 		/*
 		 * (non-Javadoc)
@@ -15,7 +15,7 @@ public enum NodeType {
 		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
-		boolean connectsTo(NodeType type) {
+		boolean connectsTo(VertexType type) {
 			if (type == HMMWV) {
 				return true;
 			}
@@ -29,7 +29,7 @@ public enum NodeType {
 		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
-		boolean connectsTo(NodeType type) {
+		boolean connectsTo(VertexType type) {
 			return true;
 		}
 	},
@@ -40,7 +40,7 @@ public enum NodeType {
 		 * @see com.redhat.demo.NodeType#connectsTo(com.redhat.demo.NodeType)
 		 */
 		@Override
-		boolean connectsTo(NodeType type) {
+		boolean connectsTo(VertexType type) {
 			if (type == HMMWV) {
 				return true;
 			}
@@ -55,7 +55,7 @@ public enum NodeType {
 	 * @param isBroker
 	 * @param isCloudEdge
 	 */
-	NodeType(boolean isBroker, boolean isCloudEdge) {
+	VertexType(boolean isBroker, boolean isCloudEdge) {
 		this.isBroker = isBroker;
 		this.isCloudEdge = isCloudEdge;
 	}
@@ -64,7 +64,7 @@ public enum NodeType {
 	 * @param type
 	 * @return
 	 */
-	abstract boolean connectsTo(NodeType type);
+	abstract boolean connectsTo(VertexType type);
 
 	/**
 	 * @return

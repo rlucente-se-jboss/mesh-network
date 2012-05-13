@@ -22,8 +22,8 @@ public class MeshNetworkDemo extends BasicGame {
 	private static GameContainer GAME_CONTAINER = null;
 	
 	private Image background;
-	private Links links;
-	private Node selectedNode = null;
+	private NodeGraph graph;
+	private Vertex selectedNode = null;
 	
 	/**
 	 * @return
@@ -44,7 +44,7 @@ public class MeshNetworkDemo extends BasicGame {
 	 */
 	public MeshNetworkDemo() {
 		super(TITLE);
-		links = new Links();
+		graph = new NodeGraph();
 	}
 
 	/*
@@ -76,7 +76,7 @@ public class MeshNetworkDemo extends BasicGame {
 				if (!line.startsWith("#")) {
 					String[] tokens = line.split("\\s+");
 
-					NodeType type = NodeType.valueOf(tokens[0]);
+					VertexType type = VertexType.valueOf(tokens[0]);
 					boolean antennaEnabled = Boolean.parseBoolean(tokens[1]);
 					Vector2f position = new Vector2f(
 							Float.parseFloat(tokens[2]),
@@ -93,13 +93,13 @@ public class MeshNetworkDemo extends BasicGame {
 						break;
 					}
 
-					links.addNode(new Node(id++, type, image, antennaEnabled,
+					graph.addVertex(new Vertex(id++, type, image, antennaEnabled,
 							position));
 				}
 			}
 
 			reader.close();
-			links.finishNodes();
+			graph.update();
 		} catch (Throwable t) {
 			SlickException se = new SlickException("unable to initialize");
 			se.initCause(t);
@@ -127,7 +127,7 @@ public class MeshNetworkDemo extends BasicGame {
 	 */
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		background.draw(0, 0);
-		links.render(g);
+		graph.render(g);
 	}
 
 	/*
@@ -151,7 +151,7 @@ public class MeshNetworkDemo extends BasicGame {
 			int deltaX = newx - oldx;
 			int deltaY = newy - oldy;
 			selectedNode.move(deltaX, deltaY);
-			links.update(selectedNode);
+			graph.update();
 		}
 	}
 
@@ -162,10 +162,10 @@ public class MeshNetworkDemo extends BasicGame {
 	 */
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		selectedNode = links.findIntersectingNode(x, y);
+		selectedNode = graph.findIntersectingVertex(x, y);
 		if (button == 1 && selectedNode != null) {
 			selectedNode.toggleAntenna();
-			links.update(selectedNode);
+			graph.update();
 			selectedNode = null;
 		}
 	}
