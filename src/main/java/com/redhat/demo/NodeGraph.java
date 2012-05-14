@@ -104,9 +104,9 @@ class NodeGraph {
 					for (Edge e : graph.edgesOf(v)) {
 						Vertex u = e.getOtherVertex(v);
 
-						if (brokerGraph.containsVertex(u)
-								&& (minEdge == null || (minEdge.getWeight() > e
-										.getWeight()))) {
+						if (   brokerGraph.containsVertex(u)
+						    && (   minEdge == null
+                                                        || (minEdge.getWeight() > e.getWeight()))) {
 							minEdge = e;
 						}
 					}
